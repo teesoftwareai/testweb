@@ -18,7 +18,7 @@ export default function AdminLogin() {
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
-      if (data.session) navigate('/admin/dashboard', { replace: true })
+      if (data.session) navigate('/adm', { replace: true })
     })
   }, [navigate])
 
@@ -34,7 +34,7 @@ export default function AdminLogin() {
           password,
         })
         if (authErr) throw authErr
-        if (data.session) navigate('/admin/dashboard', { replace: true })
+        if (data.session) navigate('/adm', { replace: true })
       } else {
         const { data, error: signUpErr } = await supabase.auth.signUp({
           email,
@@ -42,7 +42,7 @@ export default function AdminLogin() {
         })
         if (signUpErr) throw signUpErr
         if (data.session) {
-          navigate('/admin/dashboard', { replace: true })
+          navigate('/adm', { replace: true })
         } else {
           setMessage(
             'สมัครสมาชิกสำเร็จ กรุณาตรวจสอบอีเมลเพื่อยืนยันบัญชีก่อนเข้าสู่ระบบ',
