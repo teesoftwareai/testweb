@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Menu, X } from 'lucide-react'
+import { useSite } from '../context/SiteContext'
+import { DEFAULT_SETTINGS } from '../lib/content'
 
 const links = [
   { label: 'หน้าแรก', href: '#home' },
@@ -12,6 +14,8 @@ const links = [
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false)
   const [open, setOpen] = useState(false)
+  const { settings } = useSite()
+  const site = { ...DEFAULT_SETTINGS.site, ...(settings?.site || {}) }
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 12)
@@ -31,10 +35,10 @@ export default function Navbar() {
       <nav className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 lg:px-8">
         <a href="#home" className="flex items-center gap-2.5">
           <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-brand-500 to-violet-600 text-lg font-bold text-white shadow-lg shadow-brand-500/30">
-            B
+            {site.logoLetter || 'B'}
           </span>
           <span className="text-xl font-bold tracking-tight text-slate-900">
-            Brightly
+            {site.name || 'Brightly'}
           </span>
         </a>
 

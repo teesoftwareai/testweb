@@ -7,8 +7,8 @@ import {
   BarChart3,
   ShieldCheck,
 } from 'lucide-react'
-
-const perks = ['ไม่มีค่าใช้จ่ายแฝง', 'เริ่มได้ใน 7 วัน', 'ยกเลิกได้ตลอด']
+import { useSite } from '../context/SiteContext'
+import { DEFAULT_SETTINGS } from '../lib/content'
 
 const highlights = [
   { icon: BarChart3, label: 'รายได้เพิ่มขึ้น', value: '+38%' },
@@ -16,6 +16,13 @@ const highlights = [
 ]
 
 export default function Hero() {
+  const { settings } = useSite()
+  const site = { ...DEFAULT_SETTINGS.site, ...(settings?.site || {}) }
+  const perks = site.heroPerks || []
+  const filled = [
+    { ...highlights[0], label: site.heroHighlight1Label, value: site.heroHighlight1Value },
+    { ...highlights[1], label: site.heroHighlight2Label, value: site.heroHighlight2Value },
+  ]
   return (
     <section
       id="home"
@@ -30,19 +37,18 @@ export default function Hero() {
         <div>
           <span className="inline-flex items-center gap-2 rounded-full border border-brand-200 bg-white px-4 py-1.5 text-sm font-medium text-brand-700 shadow-sm">
             <Sparkles className="h-4 w-4 text-brand-600" />
-            เปิดตัวโซลูชันใหม่ล่าสุดปี 2026
+            {site.badge}
           </span>
 
           <h1 className="mt-6 text-4xl font-extrabold leading-[1.15] tracking-tight text-slate-900 sm:text-5xl lg:text-6xl">
-            ขับเคลื่อนธุรกิจของคุณให้{' '}
+            {site.heroTitle1}{' '}
             <span className="bg-gradient-to-r from-brand-600 to-violet-600 bg-clip-text text-transparent">
-              เติบโตอย่างก้าวกระโดด
+              {site.heroTitleHighlight}
             </span>
           </h1>
 
           <p className="mt-6 max-w-xl text-lg leading-relaxed text-slate-600">
-            Brightly รวบรวมเครื่องมือและทีมผู้เชี่ยวชาญไว้ในที่เดียว ช่วยให้คุณ
-            โฟกัสกับสิ่งที่ทำได้ดีที่สุด เราจัดการส่วนที่เหลือให้ทั้งหมด
+            {site.heroSubtitle}
           </p>
 
           <div className="mt-8 flex flex-wrap items-center gap-4">
@@ -108,7 +114,7 @@ export default function Hero() {
               </div>
 
               <div className="mt-8 grid grid-cols-2 gap-4">
-                {highlights.map((item) => (
+                {filled.map((item) => (
                   <div
                     key={item.label}
                     className="rounded-2xl bg-slate-50 p-4"
@@ -149,7 +155,9 @@ export default function Hero() {
               )}
             </div>
             <div>
-              <p className="text-sm font-bold text-slate-900">ลูกค้า 1,200+</p>
+              <p className="text-sm font-bold text-slate-900">
+                {site.heroCustomers}
+              </p>
               <p className="text-xs text-slate-500">
                 ให้ความไว้วางใจกับเรา
               </p>

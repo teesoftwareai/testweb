@@ -1,55 +1,15 @@
-import {
-  Briefcase,
-  Megaphone,
-  Palette,
-  Code2,
-  LineChart,
-  HeadphonesIcon,
-  ArrowRight,
-} from 'lucide-react'
+import { ArrowRight } from 'lucide-react'
 import { useReveal } from '../hooks/useReveal'
-
-const services = [
-  {
-    icon: Briefcase,
-    title: 'ที่ปรึกษาธุรกิจ',
-    desc: 'วางกลยุทธ์และแผนธุรกิจที่ชัดเจน พร้อมดูแลตั้งแต่เริ่มต้นจนถึงการขยายเติบโต',
-    tag: 'ยอดนิยม',
-  },
-  {
-    icon: Palette,
-    title: 'ออกแบบแบรนด์',
-    desc: 'สร้างแบรนด์ที่จดจำได้ ทั้งโลโก้ อัตลักษณ์ และคู่มือการใช้งานสำหรับทุกช่องทาง',
-    tag: 'ใหม่',
-  },
-  {
-    icon: Code2,
-    title: 'พัฒนาเว็บไซต์',
-    desc: 'เว็บไซต์ที่ทันสมัย รองรับทุกอุปกรณ์ และโหลดเร็ว เพื่อประสบการณ์ที่ดีที่สุดของลูกค้า',
-    tag: '',
-  },
-  {
-    icon: Megaphone,
-    title: 'การตลาดดิจิทัล',
-    desc: 'วางแผนการตลาดออนไลน์แบบครบวงจร ตั้งแต่โฆษณา เนื้อหา จนถึงการวิเคราะห์ผล',
-    tag: '',
-  },
-  {
-    icon: LineChart,
-    title: 'วิเคราะห์ข้อมูล',
-    desc: 'แปลงข้อมูลให้เป็นข้อมูลเชิงลึกที่นำไปใช้ได้จริงเพื่อการตัดสินใจที่ชาญฉลาด',
-    tag: '',
-  },
-  {
-    icon: HeadphonesIcon,
-    title: 'ดูแลระบบต่อเนื่อง',
-    desc: 'บริการดูแลระบบและซัพพอร์ตหลังการส่งมอบ ให้ธุรกิจดำเนินไปได้อย่างราบรื่น',
-    tag: '',
-  },
-]
+import { useSite } from '../context/SiteContext'
+import { iconMap, DEFAULT_DATA } from '../lib/content'
 
 export default function Services() {
   const ref = useReveal()
+  const { data } = useSite()
+  const services = (data?.services && data.services.length
+    ? data.services
+    : DEFAULT_DATA.services
+  ).map((s) => ({ ...s, Icon: iconMap[s.icon] || null }))
 
   return (
     <section
@@ -84,7 +44,7 @@ export default function Services() {
         <div className="reveal mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {services.map((service) => (
             <div
-              key={service.title}
+              key={service.id || service.title}
               className="group relative rounded-3xl border border-slate-200/70 bg-white p-8 shadow-sm transition-all duration-300 hover:-translate-y-1.5 hover:border-brand-200 hover:shadow-2xl hover:shadow-brand-600/10"
             >
               {service.tag && (
@@ -93,13 +53,13 @@ export default function Services() {
                 </span>
               )}
               <span className="inline-flex h-13 w-13 items-center justify-center rounded-2xl bg-gradient-to-br from-brand-600 to-violet-600 p-3 text-white shadow-lg shadow-brand-600/25 transition-transform group-hover:scale-110">
-                <service.icon className="h-6.5 w-6.5" />
+                {service.Icon && <service.Icon className="h-6.5 w-6.5" />}
               </span>
               <h3 className="mt-5 text-xl font-bold text-slate-900">
                 {service.title}
               </h3>
               <p className="mt-2.5 text-sm leading-relaxed text-slate-600">
-                {service.desc}
+                {service.description}
               </p>
             </div>
           ))}

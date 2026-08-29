@@ -1,4 +1,6 @@
 import { Mail } from 'lucide-react'
+import { useSite } from '../context/SiteContext'
+import { DEFAULT_SETTINGS } from '../lib/content'
 
 const Facebook = (props) => (
   <svg
@@ -48,27 +50,6 @@ const Linkedin = (props) => (
   </svg>
 )
 
-const columns = [
-  {
-    title: 'บริการ',
-    links: [
-      'ที่ปรึกษาธุรกิจ',
-      'ออกแบบแบรนด์',
-      'พัฒนาเว็บไซต์',
-      'การตลาดดิจิทัล',
-      'วิเคราะห์ข้อมูล',
-    ],
-  },
-  {
-    title: 'บริษัท',
-    links: ['เกี่ยวกับเรา', 'ทีมงาน', 'ผลงาน', 'บล็อก', 'ร่วมงานกับเรา'],
-  },
-  {
-    title: 'สนับสนุน',
-    links: ['ศูนย์ช่วยเหลือ', 'เอกสาร', 'นโยบายความเป็นส่วนตัว', 'ข้อกำหนดการใช้งาน'],
-  },
-]
-
 const socials = [
   { icon: Facebook, label: 'Facebook' },
   { icon: Instagram, label: 'Instagram' },
@@ -77,6 +58,13 @@ const socials = [
 ]
 
 export default function Footer() {
+  const { settings } = useSite()
+  const c = { ...DEFAULT_SETTINGS.contact, ...(settings?.contact || {}) }
+  const site = settings?.site || {}
+  const name = site.name || 'Brightly'
+  const letter = site.logoLetter || 'B'
+  const email = (c.emailLines && c.emailLines[0]) || 'hello@brightly.co.th'
+  const columns = c.footerColumns || []
   return (
     <footer className="bg-slate-950 text-slate-400">
       <div className="mx-auto max-w-7xl px-6 py-16 lg:px-8">
@@ -84,15 +72,14 @@ export default function Footer() {
           <div>
             <a href="#home" className="flex items-center gap-2.5">
               <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-brand-500 to-violet-600 text-lg font-bold text-white">
-                B
+                {letter}
               </span>
               <span className="text-xl font-bold tracking-tight text-white">
-                Brightly
+                {name}
               </span>
             </a>
             <p className="mt-5 max-w-sm text-sm leading-relaxed">
-              โซลูชันครบวงจรสำหรับธุรกิจยุคใหม่
-              ช่วยให้คุณเติบโตอย่างยั่งยืนด้วยทีมผู้เชี่ยวชาญและเทคโนโลยีที่ทันสมัย
+              {c.footerText}
             </p>
             <div className="mt-6 flex gap-3">
               {socials.map((social) => (
@@ -130,15 +117,13 @@ export default function Footer() {
         </div>
 
         <div className="mt-14 flex flex-col items-center justify-between gap-4 border-t border-white/10 pt-8 sm:flex-row">
-          <p className="text-sm">
-            © {new Date().getFullYear()} Brightly Co., Ltd. สงวนลิขสิทธิ์
-          </p>
+          <p className="text-sm">{c.copyright}</p>
           <a
-            href="mailto:hello@brightly.co.th"
+            href={`mailto:${email}`}
             className="inline-flex items-center gap-2 text-sm transition-colors hover:text-white"
           >
             <Mail className="h-4 w-4" />
-            hello@brightly.co.th
+            {email}
           </a>
         </div>
       </div>

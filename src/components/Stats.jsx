@@ -1,14 +1,11 @@
 import { useReveal } from '../hooks/useReveal'
-
-const stats = [
-  { value: '1,200+', label: 'ลูกค้าที่ไว้วางใจเรา' },
-  { value: '98%', label: 'อัตราความพึงพอใจ' },
-  { value: '8 ปี', label: 'ประสบการณ์การทำงาน' },
-  { value: '24/7', label: 'สนับสนุนตลอดเวลา' },
-]
+import { useSite } from '../context/SiteContext'
+import { DEFAULT_DATA } from '../lib/content'
 
 export default function Stats() {
   const ref = useReveal()
+  const { data } = useSite()
+  const stats = data?.stats && data.stats.length ? data.stats : DEFAULT_DATA.stats
 
   return (
     <section className="relative overflow-hidden bg-gradient-to-r from-brand-700 via-brand-600 to-violet-600 py-20">

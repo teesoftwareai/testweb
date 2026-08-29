@@ -1,35 +1,16 @@
 import { Quote, Star } from 'lucide-react'
 import { useReveal } from '../hooks/useReveal'
-
-const testimonials = [
-  {
-    quote:
-      'ตั้งแต่ใช้บริการ Brightly ยอดขายของเราเพิ่มขึ้นเกือบเท่าตัวภายใน 6 เดือน ทีมงานดูแลกันอย่างดีมาก ไม่เคยปล่อยให้เรารอคำตอบนานเลย',
-    name: 'คุณสมชาย วงศ์ไพศาล',
-    role: 'CEO, บริษัท ไทยฟู้ด มาร์ท จำกัด',
-    initials: 'ส',
-    color: 'from-amber-400 to-orange-500',
-  },
-  {
-    quote:
-      'เป็นครั้งแรกที่รู้สึกว่าเอาใจช่วยธุรกิจเราแบบจริงจัง ทุกอย่างโปร่งใส เข้าใจง่าย และเห็นผลจริง เหนือความคาดหมายมาก ๆ',
-    name: 'คุณพิมพ์ชนก รัตนมณี',
-    role: 'ผู้ก่อตั้ง, กิจการ Bloom & Co.',
-    initials: 'พ',
-    color: 'from-violet-400 to-fuchsia-500',
-  },
-  {
-    quote:
-      'เว็บไซต์ที่ทีมออกแบบให้สวยเกินคาด ลูกค้าหลายรายชมตลอด และช่วยให้แบรนด์เราดูเป็นมืออาชีพขึ้นมาก เห็นผลเรื่องยอดเพิ่มชัดเจน',
-    name: 'คุณกิตติภพ สุวรรณศรี',
-    role: 'Managing Director, Skyline Digital',
-    initials: 'ก',
-    color: 'from-brand-500 to-violet-600',
-  },
-]
+import { useSite } from '../context/SiteContext'
+import { DEFAULT_DATA } from '../lib/content'
+import { getPublicUrl } from '../lib/supabase'
 
 export default function Testimonials() {
   const ref = useReveal()
+  const { data } = useSite()
+  const testimonials =
+    data?.testimonials && data.testimonials.length
+      ? data.testimonials
+      : DEFAULT_DATA.testimonials
 
   return (
     <section
@@ -67,11 +48,19 @@ export default function Testimonials() {
                 “{t.quote}”
               </blockquote>
               <figcaption className="mt-6 flex items-center gap-3 border-t border-slate-100 pt-6">
-                <span
-                  className={`flex h-11 w-11 items-center justify-center rounded-full bg-gradient-to-br ${t.color} text-lg font-bold text-white`}
-                >
-                  {t.initials}
-                </span>
+                {t.avatar_url ? (
+                  <img
+                    src={getPublicUrl(t.avatar_url)}
+                    alt={t.name}
+                    className="h-11 w-11 rounded-full object-cover"
+                  />
+                ) : (
+                  <span
+                    className={`flex h-11 w-11 items-center justify-center rounded-full bg-gradient-to-br ${t.color} text-lg font-bold text-white`}
+                  >
+                    {t.initials}
+                  </span>
+                )}
                 <div>
                   <p className="text-sm font-bold text-slate-900">{t.name}</p>
                   <p className="text-xs text-slate-500">{t.role}</p>

@@ -1,17 +1,11 @@
 import { useReveal } from '../hooks/useReveal'
-
-const logos = [
-  'NovaTech',
-  'Skyline Co.',
-  '라온그룹',
-  'Peak Digital',
-  'Orbit Studio',
-  'Harmony',
-  'Vertex',
-]
+import { useSite } from '../context/SiteContext'
+import { DEFAULT_DATA } from '../lib/content'
 
 export default function LogoBar() {
   const ref = useReveal()
+  const { data } = useSite()
+  const logos = data?.logos && data.logos.length ? data.logos : DEFAULT_DATA.logos
 
   return (
     <section className="border-y border-slate-100 bg-white py-12">
@@ -22,10 +16,10 @@ export default function LogoBar() {
         <div className="reveal mt-8 flex flex-wrap items-center justify-center gap-x-12 gap-y-6">
           {logos.map((logo) => (
             <span
-              key={logo}
+              key={logo.id || logo.name}
               className="text-xl font-bold tracking-tight text-slate-300 transition-colors hover:text-brand-400"
             >
-              {logo}
+              {logo.name}
             </span>
           ))}
         </div>

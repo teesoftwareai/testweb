@@ -7,28 +7,15 @@ import {
   Send,
   CheckCircle2,
 } from 'lucide-react'
+import { useSite } from '../context/SiteContext'
+import { DEFAULT_SETTINGS } from '../lib/content'
+import { supabase } from '../lib/supabase'
 
-const contactInfo = [
-  {
-    icon: MapPin,
-    title: 'ที่ตั้งสำนักงาน',
-    lines: ['123 ถนนสุขุมวิท แขวงคลองเตย', 'เขตคลองเตย กรุงเทพฯ 10110'],
-  },
-  {
-    icon: Phone,
-    title: 'โทรศัพท์',
-    lines: ['02-123-4567', '08x-xxx-xxxx (มือถือ)'],
-  },
-  {
-    icon: Mail,
-    title: 'อีเมล',
-    lines: ['hello@brightly.co.th', 'support@brightly.co.th'],
-  },
-  {
-    icon: Clock,
-    title: 'เวลาทำการ',
-    lines: ['จันทร์ - ศุกร์ 9:00 - 18:00', 'เสาร์ - อาทิตย์ ปิดทำการ'],
-  },
+const contactFields = [
+  { key: 'address', title: 'ที่ตั้งสำนักงาน', icon: MapPin },
+  { key: 'phone', title: 'โทรศัพท์', icon: Phone },
+  { key: 'email', title: 'อีเมล', icon: Mail },
+  { key: 'hours', title: 'เวลาทำการ', icon: Clock },
 ]
 
 const inputClass =
@@ -36,11 +23,38 @@ const inputClass =
 
 export default function Contact() {
   const [sent, setSent] = useState(false)
-  const [form, setForm] = useState({ name: '', email: '', message: '' })
+  const [error, setError] = useState(null)
+  const [saving, setSaving] = useState(false)
+  const [form, setForm] = useState({ name: '', email: '', phone: '', message: '' })
+  const { settings } = useSite()
+  const c = { ...DEFAULT_SETTINGS.contact, ...(settings?.contact || {}) }
 
-  const handleSubmit = (e) => {
+  const contactInfo = [
+    { ...contactFields[0], lines: c.addressLines || [] },
+    { ...contactFields[1], lines: c.phoneLines || [] },
+    { ...contactFields[2], lines: c.emailLines || [] },
+    { ...contactFields[3], lines: c.hoursLines || [] },
+  ]
+
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    setSent(true)
+    setSaving(true)
+    setError(null)
+    try {
+      const { error: dbError } = await supabase.from('messages').insert({
+        name: form.name,
+        email: form.email,
+        phone: form.phone,
+        message: form.message,
+      })
+      if (dbError) throw dbError
+      setSent(true)
+    } catch (err) {
+      console.error(err)
+      setError('ไม่สามารถส่งข้อความได้ในขณะนี้ กรุณาลองใหม่อีกครั้ง')
+    } finally {
+      setSaving(false)
+    }
   }
 
   return (
@@ -52,11 +66,10 @@ export default function Contact() {
               ติดต่อเรา
             </span>
             <h2 className="mt-3 text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl">
-              เริ่มต้นบทสนทนากับเรา
+              {c.contactHeadline}
             </h2>
             <p className="mt-4 max-w-md text-lg leading-relaxed text-slate-600">
-              มีคำถาม หรืออยากได้คำแนะนำสำหรับธุรกิจของคุณ?
-              ทิ้งข้อความไว้ แล้วทีมงานจะติดต่อกลับภายใน 24 ชั่วโมง
+              {c.contactIntro}
             </p>
 
             <div className="mt-10 grid gap-6 sm:grid-cols-2">
@@ -96,7 +109,8 @@ export default function Contact() {
                   type="button"
                   onClick={() => {
                     setSent(false)
-                    setForm({ name: '', email: '', message: '' })
+                    setError(null)
+                    setForm({ name: '', email: '', phone: '', message: '' })
                   }}
                   className="mt-8 text-sm font-semibold text-brand-600 hover:text-brand-700"
                 >
@@ -145,6 +159,24 @@ export default function Contact() {
                 </div>
                 <div>
                   <label
+                    htmlFor="phone"
+                    className="mb-1.5 block text-sm font-semibold text-slate-700"
+                  >
+                    เบอร์โทร (ไม่บังคับ)
+                  </label>
+                  <input
+                    id="phone"
+                    type="tel"
+                    value={form.phone}
+                    onChange={(e) =>
+                      setForm({ ...form, phone: e.target.value })
+                    }
+                    placeholder="เช่น 08x-xxx-xxxx"
+                    className={inputClass}
+                  />
+                </div>
+                <div>
+                  <label
                     htmlFor="message"
                     className="mb-1.5 block text-sm font-semibold text-slate-700"
                   >
@@ -162,11 +194,17 @@ export default function Contact() {
                     className={`${inputClass} resize-none`}
                   />
                 </div>
+                {error && (
+                  <p className="rounded-xl bg-red-50 px-4 py-3 text-sm font-medium text-red-600">
+                    {error}
+                  </p>
+                )}
                 <button
                   type="submit"
-                  className="group flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-brand-600 to-violet-600 px-6 py-3.5 text-base font-semibold text-white shadow-lg shadow-brand-600/30 transition-all hover:-translate-y-0.5 hover:shadow-xl hover:shadow-brand-600/40"
+                  disabled={saving}
+                  className="group flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-brand-600 to-violet-600 px-6 py-3.5 text-base font-semibold text-white shadow-lg shadow-brand-600/30 transition-all hover:-translate-y-0.5 hover:shadow-xl hover:shadow-brand-600/40 disabled:cursor-not-allowed disabled:opacity-60"
                 >
-                  ส่งข้อความ
+                  {saving ? 'กำลังส่ง...' : 'ส่งข้อความ'}
                   <Send className="h-4.5 w-4.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                 </button>
               </form>
