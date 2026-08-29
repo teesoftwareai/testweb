@@ -56,7 +56,7 @@ export default function Navbar() {
 
         <div className="hidden items-center gap-3 md:flex">
           <a
-            href="#contact"
+            href="/admin"
             className="rounded-full px-5 py-2.5 text-sm font-semibold text-brand-700 transition-colors hover:bg-brand-50"
           >
             เข้าสู่ระบบ
