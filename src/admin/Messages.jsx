@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Mail, Phone, Trash2, Inbox } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import { Flash, useSupabaseData, TableCard } from './adminUtils'
+import Swal from 'sweetalert2'
 
 export default function Messages() {
   const { rows, setRows, loading, reload } = useSupabaseData('messages', 'created_at')
@@ -22,7 +23,14 @@ export default function Messages() {
   }
 
   const remove = async (id) => {
-    if (!window.confirm('ต้องการลบข้อความนี้?')) return
+    const confirm = await Swal.fire({
+      title: 'ต้องการลบข้อความนี้?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'ลบ',
+      cancelButtonText: 'ยกเลิก'
+    })
+    if (!confirm.isConfirmed) return
     const { error } = await supabase.from('messages').delete().eq('id', id)
     if (error) {
       setFlash({ text: error.message, type: 'error' })
