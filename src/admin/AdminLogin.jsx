@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { Eye, EyeOff, Lock, Mail, ShieldCheck } from 'lucide-react'
 import { supabase } from '../lib/supabase'
+import Swal from 'sweetalert2'
 
 const inputClass =
   'w-full rounded-xl border border-slate-200 bg-slate-50/50 px-4 py-3 pl-11 text-sm text-slate-900 placeholder:text-slate-400 transition-all focus:border-brand-400 focus:bg-white focus:ring-4 focus:ring-brand-100 focus:outline-none'
@@ -34,7 +35,10 @@ export default function AdminLogin() {
           password,
         })
         if (authErr) throw authErr
-        if (data.session) navigate('/adm', { replace: true })
+        if (data.session) {
+  navigate('/adm', { replace: true })
+  Swal.fire({ icon: 'success', title: 'เข้าสู่ระบบสำเร็จ' })
+}
       } else {
         const { data, error: signUpErr } = await supabase.auth.signUp({
           email,
@@ -51,7 +55,8 @@ export default function AdminLogin() {
         }
       }
     } catch (err) {
-      setError(err.message || 'เกิดข้อผิดพลาด กรุณาลองใหม่')
+      setError(err.message || 'เกิดข้อผิดพลาด กรุณาลองใหม่');
+Swal.fire({ icon: 'error', title: 'ข้อผิดพลาด', text: err.message || 'เกิดข้อผิดพลาด กรุณาลองใหม่' });
     } finally {
       setLoading(false)
     }
