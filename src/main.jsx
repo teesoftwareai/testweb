@@ -8,7 +8,7 @@ import AdminDashboard from './admin/AdminDashboard.jsx'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <BrowserRouter>
+    <BrowserRouter basename="/testweb">
       <Routes>
         <Route path="/" element={<App />} />
         <Route path="/admin" element={<AdminLogin />} />
