@@ -16,10 +16,15 @@ export function useReveal() {
           }
         })
       },
-      { threshold: 0.15 }
+      { threshold: 0.05 }
     )
 
-    // Observe each direct child with .reveal, plus the container itself
+    // Observe the container itself if it has .reveal class
+    if (el.classList.contains('reveal') || el.classList.contains('reveal-item')) {
+      observer.observe(el)
+    }
+
+    // Observe each child with .reveal or .reveal-item
     el.querySelectorAll('.reveal, .reveal-item').forEach((child) =>
       observer.observe(child)
     )
